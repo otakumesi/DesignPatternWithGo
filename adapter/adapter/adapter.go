@@ -1,6 +1,8 @@
-package main
+package adapter
 
-import "fmt"
+import (
+	"./x_sys"
+)
 
 type Shape interface {
 	Display() string
@@ -20,16 +22,18 @@ type Square struct {
 /* 他のシステムを利用するCircleオブジェクト */
 
 type Circle struct {
-	xCircle *XCircle
+	xcr *x_sys.XCircle
 }
 
 func NewCircle(c Color) *Circle {
-	x := NewXCircle(c)
-	return &Circle{xCircle: x}
+	xc := x_sys.XColor(string(c))
+	x := x_sys.NewXCircle(xc)
+	return &Circle{xcr: x}
 }
 
 func (ci *Circle) SetColor(c Color) {
-	ci.xCircle.SetItsColor(c)
+	xc := x_sys.XColor(string(c))
+	ci.xcr.SetItsColor(xc)
 }
 
 func NewSquare(c Color) *Square {
@@ -37,7 +41,7 @@ func NewSquare(c Color) *Square {
 }
 
 func (ci *Circle) Display() string {
-	return ci.xCircle.DisplayIt()
+	return ci.xcr.DisplayIt()
 }
 
 func NewPoint(c Color) *Point {
@@ -58,33 +62,4 @@ func (p *Square) SetColor(c Color) {
 
 func (p *Square) Display() string {
 	return string(p.color) + "Square"
-}
-
-/* 他のシステムのStruct */
-
-type XCircle struct {
-	color Color
-}
-
-func NewXCircle(c Color) *XCircle {
-	return &XCircle{color: c}
-}
-
-func (x *XCircle) SetItsColor(c Color) {
-	x.color = c
-}
-
-func (x *XCircle) DisplayIt() string {
-	return string(x.color) + "Circle"
-}
-
-func main() {
-	color := Color("Red")
-	var shapes []Shape
-	shapes = append(shapes, NewPoint(color))
-	shapes = append(shapes, NewSquare(color))
-	shapes = append(shapes, NewCircle(color))
-	for _, s := range shapes {
-		fmt.Println(s.Display())
-	}
 }
